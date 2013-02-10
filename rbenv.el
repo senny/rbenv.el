@@ -55,8 +55,17 @@
 
 (defun rbenv--activate (ruby-version)
   (let ((binary-path (rbenv--binary-path ruby-version)))
+    (when rbenv--current-version
+      (let ((old-binary-path (rbenv--binary-path rbenv--current-version)))
+        (setenv "PATH" (replace-regexp-in-string
+                        (regexp-quote (concat old-binary-path ":"))
+                        ""
+                        (getenv "PATH")))
+        (setq exec-path (remove old-binary-path exec-path))))
     (setenv "PATH" (concat binary-path ":" (getenv "PATH")))
-    (add-to-list 'exec-path binary-path)))
+    (setq eshell-path-env (getenv "PATH"))
+    (add-to-list 'exec-path binary-path))
+  (setq rbenv--current-version ruby-version))
 
 (defun rbenv--binary-path (ruby-version)
   (rbenv--expand-path "versions" ruby-version "bin"))
