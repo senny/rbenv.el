@@ -1,0 +1,73 @@
+;;; rbenv.el --- Emacs integration for rbenv
+
+;; Copyright (C) 2010-2011 Yves Senn
+
+;; URL: https://github.com/senny/rbenv.el
+;; Author: Yves Senn <yves.senn@gmail.com>
+;; Version: 0.0.1
+;; Created: 10 February 2013
+;; Keywords: ruby rbenv
+
+;; This file is NOT part of GNU Emacs.
+
+;;; License:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;; M-x rbenv-use-global prepares the current Emacs session to use
+;; the global ruby configured with rbenv.
+
+;; M-x rbenv-use allows you to switch the current session to the ruby
+;; implementation of your choice.
+
+;;; Compiler support:
+
+(defvar rbenv-global-version-file (expand-file-name "~/.rbenv/version")
+  "path to the global version configuration file of rbenv")
+
+(defvar rbenv--current-version nil
+  "reflects the currently active rbenv ruby version")
+
+(defun rbenv-use-global ()
+  "activate rbenv global ruby"
+  (interactive)
+  (rbenv-use (rbenv--global-ruby-version)))
+
+(defun rbenv-use (ruby-version)
+  (interactive)
+  (rbenv--activate ruby-version)
+  (message (concat "[rbenv] using " ruby-version)))
+
+(defun rbenv--activate (ruby-version)
+  (let ((binary-path (rbenv--binary-path ruby-version)))
+    (setenv "PATH" (concat binary-path ":" (getenv "PATH")))
+    (add-to-list 'exec-path binary-path)))
+
+(defun rbenv--binary-path (ruby-version)
+  (rbenv--expand-path "versions" ruby-version "bin"))
+
+(defun rbenv--expand-path (&rest segments)
+  (let ((path (mapconcat 'identity segments "/")))
+    (expand-file-name (concat (getenv "HOME") "/.rbenv/" path))))
+
+(defun rbenv--global-ruby-version ()
+  (with-temp-buffer
+    (insert-file-contents rbenv-global-version-file)
+    (rbenv--replace-trailing-whitespace (buffer-substring-no-properties (point-min) (point-max)))))
+(defun rbenv--replace-trailing-whitespace (text)
+  (replace-regexp-in-string "[[:space:]]\\'" "" text))
