@@ -110,3 +110,5 @@
 
 (defun rbenv--replace-trailing-whitespace (text)
   (replace-regexp-in-string "[[:space:]]\\'" "" text))
+
+(provide 'rbenv)

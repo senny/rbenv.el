@@ -8,7 +8,7 @@ Installation
 
 ```lisp
 (add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
-(require rbenv)
+(require 'rbenv)
 (rbenv-use-global)
 ```
 
