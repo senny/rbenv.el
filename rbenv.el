@@ -133,3 +133,5 @@
   (replace-regexp-in-string "[[:space:]]\\'" "" text))
 
 (provide 'rbenv)
+
+;;; rbenv.el ends here
