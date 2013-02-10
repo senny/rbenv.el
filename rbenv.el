@@ -57,6 +57,14 @@
   (interactive)
   (rbenv-use (rbenv--global-ruby-version)))
 
+(defun rbenv-use-corresponding ()
+  "search for .ruby-version and activate the corresponding ruby"
+  (interactive)
+  (let ((version-file-path (or (rbenv--locate-file ".ruby-version")
+                               (rbenv--locate-file ".rbenv-version"))))
+    (if version-file-path (rbenv-use (rbenv--read-version-from-file version-file-path))
+      (message "[rbenv] could not locate .ruby-version or .rbenv-version"))))
+
 (defun rbenv-use (ruby-version)
   "choose what ruby you want to activate"
   (interactive
@@ -93,9 +101,22 @@
     (expand-file-name (concat (getenv "HOME") "/.rbenv/" path))))
 
 (defun rbenv--global-ruby-version ()
+  (rbenv--read-version-from-file rbenv-global-version-file))
+
+(defun rbenv--read-version-from-file (path)
   (with-temp-buffer
-    (insert-file-contents rbenv-global-version-file)
+    (insert-file-contents path)
     (rbenv--replace-trailing-whitespace (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun rbenv--locate-file (file-name &optional path)
+  "searches the directory tree for an .rvmrc configuration file"
+  (when (null path) (setq path default-directory))
+  (cond
+   ((equal (expand-file-name path) (expand-file-name "~")) nil)
+   ((equal (expand-file-name path) "/") nil)
+   ((member file-name (directory-files path))
+    (concat (expand-file-name path) file-name))
+   (t (rbenv--locate-file file-name (concat (file-name-as-directory path) "../")))))
 
 (defun rbenv--call-process (&rest args)
   (with-temp-buffer

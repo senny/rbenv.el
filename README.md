@@ -17,3 +17,5 @@ Usage
 
 * `rbenv-use-global` will activate your global ruby
 * `rbenv-use` allows you to choose what ruby version you want to use
+* `rbenv-use-corresponding` searches for .ruby-version and activates
+  the corresponding ruby
