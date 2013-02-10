@@ -37,6 +37,15 @@
 
 ;;; Compiler support:
 
+(defcustom rbenv-interactive-completion-function
+  (if ido-mode 'ido-completing-read 'completing-read)
+  "The function which is used by rbenv.el to interactivly complete user input"
+  :group 'rbenv
+  :type 'function)
+
+(defvar rbenv-executable (expand-file-name "~/.rbenv/bin/rbenv")
+  "path to the rbenv executable")
+
 (defvar rbenv-global-version-file (expand-file-name "~/.rbenv/version")
   "path to the global version configuration file of rbenv")
 
@@ -49,9 +58,15 @@
   (rbenv-use (rbenv--global-ruby-version)))
 
 (defun rbenv-use (ruby-version)
-  (interactive)
+  "choose what ruby you want to activate"
+  (interactive
+   (let ((picked-ruby (rbenv--completing-read "Ruby version: " (rbenv/list))))
+     (list picked-ruby)))
   (rbenv--activate ruby-version)
   (message (concat "[rbenv] using " ruby-version)))
+
+(defun rbenv/list ()
+  (split-string (rbenv--call-process "versions" "--bare") "\n"))
 
 (defun rbenv--activate (ruby-version)
   (let ((binary-path (rbenv--binary-path ruby-version)))
@@ -67,6 +82,9 @@
     (add-to-list 'exec-path binary-path))
   (setq rbenv--current-version ruby-version))
 
+(defun rbenv--completing-read (prompt options)
+  (funcall rbenv-interactive-completion-function prompt options))
+
 (defun rbenv--binary-path (ruby-version)
   (rbenv--expand-path "versions" ruby-version "bin"))
 
@@ -78,5 +96,17 @@
   (with-temp-buffer
     (insert-file-contents rbenv-global-version-file)
     (rbenv--replace-trailing-whitespace (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun rbenv--call-process (&rest args)
+  (with-temp-buffer
+    (let* ((success (apply 'call-process rbenv-executable nil t nil
+                           (delete nil args)))
+           (raw-output (buffer-substring-no-properties
+                        (point-min) (point-max)))
+           (output (rbenv--replace-trailing-whitespace raw-output)))
+      (if (= 0 success)
+          output
+        (message output)))))
+
 (defun rbenv--replace-trailing-whitespace (text)
   (replace-regexp-in-string "[[:space:]]\\'" "" text))
