@@ -1,6 +1,6 @@
 desc "create a new release"
 task 'release' do
-  current_version = run('git tag').split(/\n/).last.strip
+  current_version = run('git tag').split(/\n/).last.strip[1..-1]
   puts "What version do you want to release? (current: #{current_version})"
   version = STDIN.gets.strip
   version_tag = "v%s" % version
