@@ -118,15 +118,10 @@
     (insert-file-contents path)
     (rbenv--replace-trailing-whitespace (buffer-substring-no-properties (point-min) (point-max)))))
 
-(defun rbenv--locate-file (file-name &optional path)
-  "searches the directory tree for an .rvmrc configuration file"
-  (when (null path) (setq path default-directory))
-  (cond
-   ((equal (expand-file-name path) (expand-file-name "~")) nil)
-   ((equal (expand-file-name path) "/") nil)
-   ((member file-name (directory-files path))
-    (concat (expand-file-name path) file-name))
-   (t (rbenv--locate-file file-name (concat (file-name-as-directory path) "../")))))
+(defun rbenv--locate-file (file-name)
+  "searches the directory tree for an given file. Returns nil if the file was not found."
+  (let ((directory (locate-dominating-file (expand-file-name buffer-file-name) file-name)))
+    (when directory (concat directory file-name))))
 
 (defun rbenv--call-process (&rest args)
   (with-temp-buffer
