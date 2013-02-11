@@ -64,11 +64,13 @@
 (defvar rbenv--initialized nil
   "indicates if the current Emacs session has been configured to use rbenv")
 
+;;;###autoload
 (defun rbenv-use-global ()
   "activate rbenv global ruby"
   (interactive)
   (rbenv-use (rbenv--global-ruby-version)))
 
+;;;###autoload
 (defun rbenv-use-corresponding ()
   "search for .ruby-version and activate the corresponding ruby"
   (interactive)
@@ -77,6 +79,7 @@
     (if version-file-path (rbenv-use (rbenv--read-version-from-file version-file-path))
       (message "[rbenv] could not locate .ruby-version or .rbenv-version"))))
 
+;;;###autoload
 (defun rbenv-use (ruby-version)
   "choose what ruby you want to activate"
   (interactive
