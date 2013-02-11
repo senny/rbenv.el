@@ -37,6 +37,11 @@
 
 ;;; Compiler support:
 
+;; helper function used in variable definitions
+(defun rbenv--expand-path (&rest segments)
+  (let ((path (mapconcat 'identity segments "/")))
+    (expand-file-name (concat (getenv "HOME") "/.rbenv/" path))))
+
 (defcustom rbenv-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
   "The function which is used by rbenv.el to interactivly complete user input"
@@ -49,8 +54,15 @@
 (defvar rbenv-global-version-file (expand-file-name "~/.rbenv/version")
   "path to the global version configuration file of rbenv")
 
-(defvar rbenv--current-version nil
-  "reflects the currently active rbenv ruby version")
+(defvar rbenv-version-environment-variable "RBENV_VERSION"
+  "name of the environment variable to configure the rbenv version")
+
+(defvar rbenv-binary-paths (list (cons 'shims-path (rbenv--expand-path "shims"))
+                                 (cons 'bin-path (rbenv--expand-path "bin")))
+  "these are added to PATH and exec-path when rbenv is setup")
+
+(defvar rbenv--initialized nil
+  "indicates if the current Emacs session has been configured to use rbenv")
 
 (defun rbenv-use-global ()
   "activate rbenv global ruby"
@@ -76,29 +88,24 @@
 (defun rbenv/list ()
   (split-string (rbenv--call-process "versions" "--bare") "\n"))
 
-(defun rbenv--activate (ruby-version)
-  (let ((binary-path (rbenv--binary-path ruby-version)))
-    (when rbenv--current-version
-      (let ((old-binary-path (rbenv--binary-path rbenv--current-version)))
-        (setenv "PATH" (replace-regexp-in-string
-                        (regexp-quote (concat old-binary-path ":"))
-                        ""
-                        (getenv "PATH")))
-        (setq exec-path (remove old-binary-path exec-path))))
-    (setenv "PATH" (concat binary-path ":" (getenv "PATH")))
+(defun rbenv--setup ()
+  (when (not rbenv--initialized)
+    (dolist (path-config rbenv-binary-paths)
+      (let ((bin-path (cdr path-config)))
+        (setenv "PATH" (concat bin-path ":" (getenv "PATH")))
+        (add-to-list 'exec-path bin-path)))
     (setq eshell-path-env (getenv "PATH"))
-    (add-to-list 'exec-path binary-path))
-  (setq rbenv--current-version ruby-version))
+    (setq rbenv--initialized t)))
+
+(defun rbenv--activate (ruby-version)
+  (rbenv--setup)
+  (setenv rbenv-version-environment-variable ruby-version))
 
 (defun rbenv--completing-read (prompt options)
   (funcall rbenv-interactive-completion-function prompt options))
 
 (defun rbenv--binary-path (ruby-version)
   (rbenv--expand-path "versions" ruby-version "bin"))
-
-(defun rbenv--expand-path (&rest segments)
-  (let ((path (mapconcat 'identity segments "/")))
-    (expand-file-name (concat (getenv "HOME") "/.rbenv/" path))))
 
 (defun rbenv--global-ruby-version ()
   (rbenv--read-version-from-file rbenv-global-version-file))
