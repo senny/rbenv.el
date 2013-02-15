@@ -29,6 +29,8 @@
 
 ;;; Commentary:
 
+;; M-x global-rbenv-mode toggle the configuration done by rbenv.el
+
 ;; M-x rbenv-use-global prepares the current Emacs session to use
 ;; the global ruby configured with rbenv.
 
@@ -48,6 +50,11 @@
   :group 'rbenv
   :type 'function)
 
+(defcustom rbenv-show-active-ruby-in-modeline t
+  "Toggles wether rbenv-mode shows the active ruby in the modeline."
+  :group 'rbenv
+  :type 'boolean)
+
 (defvar rbenv-executable (expand-file-name "~/.rbenv/bin/rbenv")
   "path to the rbenv executable")
 
@@ -61,8 +68,16 @@
                                  (cons 'bin-path (rbenv--expand-path "bin")))
   "these are added to PATH and exec-path when rbenv is setup")
 
+(defface rbenv-active-ruby-face
+  '((t (:weight bold :foreground "Red")))
+  "The face used to highlight the current ruby on the modeline.")
+
 (defvar rbenv--initialized nil
   "indicates if the current Emacs session has been configured to use rbenv")
+
+(defvar rbenv--modestring nil
+  "text rbenv-mode will display in the modeline.")
+(put 'rbenv--modestring 'risky-local-variable t)
 
 ;;;###autoload
 (defun rbenv-use-global ()
@@ -98,11 +113,21 @@
         (setenv "PATH" (concat bin-path ":" (getenv "PATH")))
         (add-to-list 'exec-path bin-path)))
     (setq eshell-path-env (getenv "PATH"))
-    (setq rbenv--initialized t)))
+    (setq rbenv--initialized t)
+    (rbenv--update-mode-line)))
+
+(defun rbenv--teardown ()
+  (when rbenv--initialized
+    (dolist (path-config rbenv-binary-paths)
+      (let ((bin-path (cdr path-config)))
+        (setenv "PATH" (replace-regexp-in-string (regexp-quote (concat bin-path ":")) "" (getenv "PATH")))
+        (setq exec-path (remove bin-path exec-path))))
+    (setq eshell-path-env (getenv "PATH"))
+    (setq rbenv--initialized nil)))
 
 (defun rbenv--activate (ruby-version)
-  (rbenv--setup)
-  (setenv rbenv-version-environment-variable ruby-version))
+  (setenv rbenv-version-environment-variable ruby-version)
+  (rbenv--update-mode-line))
 
 (defun rbenv--completing-read (prompt options)
   (funcall rbenv-interactive-completion-function prompt options))
@@ -136,6 +161,27 @@
 
 (defun rbenv--replace-trailing-whitespace (text)
   (replace-regexp-in-string "[[:space:]]\\'" "" text))
+
+(defun rbenv--update-mode-line ()
+  (setq rbenv--modestring (append '(" [")
+                                  (list (propertize (rbenv--active-ruby-version) 'face 'rbenv-active-ruby-face))
+                                  '("]"))))
+
+(defun rbenv--active-ruby-version ()
+  (or (getenv rbenv-version-environment-variable) (rbenv--global-ruby-version)))
+
+;;;###autoload
+(define-minor-mode global-rbenv-mode
+  "use rbenv to configure the ruby version used by your Emacs."
+  :global t
+  (if global-rbenv-mode
+      (progn
+        (when rbenv-show-active-ruby-in-modeline
+          (unless (memq 'rbenv--modestring global-mode-string)
+            (setq global-mode-string (append global-mode-string '(rbenv--modestring)))))
+        (rbenv--setup))
+    (setq global-mode-string (delq 'rbenv--modestring global-mode-string))
+    (rbenv--teardown)))
 
 (provide 'rbenv)
 
