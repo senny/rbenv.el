@@ -9,16 +9,29 @@ Installation
 ```lisp
 (add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
 (require 'rbenv)
-(rbenv-use-global)
+(global-rbenv-mode)
 ```
 
 Usage
 -----
 
+* `global-rbenv-mode` activate / deactivate rbenv.el
+
 * `rbenv-use-global` will activate your global ruby
 * `rbenv-use` allows you to choose what ruby version you want to use
 * `rbenv-use-corresponding` searches for .ruby-version and activates
   the corresponding ruby
+
+Configuration
+-------------
+
+**the modeline**
+rbenv.el will show you the active ruby in the modeline. If you don't
+like this feature you can disable it:
+
+```lisp
+(setq rbenv-show-active-ruby-in-modeline nil)
+```
 
 Press
 -----
