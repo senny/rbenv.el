@@ -58,7 +58,7 @@
 (defvar rbenv-executable (expand-file-name "~/.rbenv/bin/rbenv")
   "path to the rbenv executable")
 
-(defvar rbenv-global-version-files (list (rbenv--expand-path "version") "/usr/local/rbenv")
+(defvar rbenv-global-version-file (expand-file-name "~/.rbenv/version")
   "path to the global version configuration file of rbenv")
 
 (defvar rbenv-version-environment-variable "RBENV_VERSION"
@@ -136,12 +136,7 @@
   (rbenv--expand-path "versions" ruby-version "bin"))
 
 (defun rbenv--global-ruby-version ()
-  (let* ((global-ruby-versions (mapcar (lambda (version-file-path)
-                                         (when (file-exists-p version-file-path)
-                                           (rbenv--read-version-from-file version-file-path))) rbenv-global-version-files))
-         (global-ruby-version (first (remove-if nil global-ruby-versions))))
-    (if global-ruby-version global-ruby-version
-      (error "[rbenv] could not detect global ruby version. Check your rbenv-global-version-files variable"))))
+  (rbenv--read-version-from-file rbenv-global-version-file))
 
 (defun rbenv--read-version-from-file (path)
   (with-temp-buffer
