@@ -40,9 +40,15 @@
 ;;; Compiler support:
 
 ;; helper function used in variable definitions
+(defcustom rbenv-installation-dir (concat (getenv "HOME") "/.rbenv/")
+  "The path to the directory where rbenv was installed."
+  :group 'rbenv
+  :type 'directory)
+
 (defun rbenv--expand-path (&rest segments)
-  (let ((path (mapconcat 'identity segments "/")))
-    (expand-file-name (concat (getenv "HOME") "/.rbenv/" path))))
+  (let ((path (mapconcat 'identity segments "/"))
+        (installation-dir (replace-regexp-in-string "/$" "" rbenv-installation-dir)))
+    (expand-file-name (concat installation-dir "/" path))))
 
 (defcustom rbenv-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
@@ -55,10 +61,10 @@
   :group 'rbenv
   :type 'boolean)
 
-(defvar rbenv-executable (expand-file-name "~/.rbenv/bin/rbenv")
+(defvar rbenv-executable (rbenv--expand-path "bin" "rbenv")
   "path to the rbenv executable")
 
-(defvar rbenv-global-version-file (expand-file-name "~/.rbenv/version")
+(defvar rbenv-global-version-file (rbenv--expand-path "version")
   "path to the global version configuration file of rbenv")
 
 (defvar rbenv-version-environment-variable "RBENV_VERSION"
@@ -131,9 +137,6 @@
 
 (defun rbenv--completing-read (prompt options)
   (funcall rbenv-interactive-completion-function prompt options))
-
-(defun rbenv--binary-path (ruby-version)
-  (rbenv--expand-path "versions" ruby-version "bin"))
 
 (defun rbenv--global-ruby-version ()
   (rbenv--read-version-from-file rbenv-global-version-file))

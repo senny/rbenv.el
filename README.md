@@ -25,6 +25,17 @@ Usage
 Configuration
 -------------
 
+**rbenv installation directory**
+By default rbenv.el assumes that you installed rbenv into
+`~/.rbenv`. If you use a different installation location you can
+customize rbenv.el to search in the right place:
+
+```lisp
+(setq rbenv-installation-dir "/usr/local/rbenv")
+```
+
+*IMPORTANT:*: Currently you need to set this variable before you load rbenv.el
+
 **the modeline**
 rbenv.el will show you the active ruby in the modeline. If you don't
 like this feature you can disable it:
