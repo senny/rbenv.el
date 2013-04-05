@@ -1,6 +1,6 @@
 ;;; rbenv.el --- Emacs integration for rbenv
 
-;; Copyright (C) 2010-2011 Yves Senn
+;; Copyright (C) 2013 Yves Senn
 
 ;; URL: https://github.com/senny/rbenv.el
 ;; Author: Yves Senn <yves.senn@gmail.com>
