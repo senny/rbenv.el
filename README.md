@@ -49,3 +49,5 @@ Press
 If you want to read more about rbenv.el check out the following links:
 
 * [Use the right Ruby with emacs and rbenv](http://blog.senny.ch/blog/2013/02/11/use-the-right-ruby-with-emacs-and-rbenv/) by Yves Senn
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/f4c783738c250ce724df3c5b9753a786 "githalytics.com")](http://githalytics.com/senny/rbenv.el)
