@@ -61,6 +61,11 @@
   :group 'rbenv
   :type 'boolean)
 
+(defcustom rbenv-modeline-function 'rbenv--modeline-with-face
+  "Function to specify the rbenv representation in the modeline."
+  :group 'rbenv
+  :type 'function)
+
 (defvar rbenv-executable (rbenv--expand-path "bin" "rbenv")
   "path to the rbenv executable")
 
@@ -166,9 +171,16 @@
   (replace-regexp-in-string "[[:space:]]\\'" "" text))
 
 (defun rbenv--update-mode-line ()
-  (setq rbenv--modestring (append '(" [")
-                                  (list (propertize (rbenv--active-ruby-version) 'face 'rbenv-active-ruby-face))
-                                  '("]"))))
+  (setq rbenv--modestring (funcall rbenv-modeline-function
+                                   (rbenv--active-ruby-version))))
+
+(defun rbenv--modeline-with-face (current-ruby)
+  (append '(" [")
+          (list (propertize current-ruby 'face 'rbenv-active-ruby-face))
+          '("]")))
+
+(defun rbenv--modeline-plain (current-ruby)
+  (list " [" current-ruby "]"))
 
 (defun rbenv--active-ruby-version ()
   (or (getenv rbenv-version-environment-variable) (rbenv--global-ruby-version)))

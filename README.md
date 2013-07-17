@@ -43,6 +43,16 @@ like this feature you can disable it:
 (setq rbenv-show-active-ruby-in-modeline nil)
 ```
 
+The default modeline representation is the ruby version (colored red) in square
+brackets. You can change the format by customizing the variable:
+
+```
+;; this will remove the colors
+(setq rbenv-modeline-function 'rbenv--modeline-plain)
+```
+
+You can also define your own function to format the ruby version as you like.
+
 Press
 -----
 
