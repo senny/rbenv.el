@@ -68,6 +68,9 @@
 
 (defvar rbenv-executable (rbenv--expand-path "bin" "rbenv")
   "path to the rbenv executable")
+  
+(defvar rbenv-ruby-shim (rbenv--expand-path "shims" "ruby")
+  "path to the ruby shim executable")
 
 (defvar rbenv-global-version-file (rbenv--expand-path "version")
   "path to the global version configuration file of rbenv")
