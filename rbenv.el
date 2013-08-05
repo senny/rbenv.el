@@ -197,7 +197,8 @@
       (progn
         (when rbenv-show-active-ruby-in-modeline
           (unless (memq 'rbenv--modestring global-mode-string)
-            (setq global-mode-string (append global-mode-string '(rbenv--modestring)))))
+            (setq global-mode-string (append (or global-mode-string '(""))
+                                             '(rbenv--modestring)))))
         (rbenv--setup))
     (setq global-mode-string (delq 'rbenv--modestring global-mode-string))
     (rbenv--teardown)))
