@@ -4,7 +4,7 @@
 
 ;; URL: https://github.com/senny/rbenv.el
 ;; Author: Yves Senn <yves.senn@gmail.com>
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Created: 10 February 2013
 ;; Keywords: ruby rbenv
 
