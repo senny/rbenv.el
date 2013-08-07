@@ -46,7 +46,7 @@ like this feature you can disable it:
 The default modeline representation is the ruby version (colored red) in square
 brackets. You can change the format by customizing the variable:
 
-```
+```lisp
 ;; this will remove the colors
 (setq rbenv-modeline-function 'rbenv--modeline-plain)
 ```
