@@ -157,7 +157,7 @@
 
 (defun rbenv--locate-file (file-name)
   "searches the directory tree for an given file. Returns nil if the file was not found."
-  (let ((directory (locate-dominating-file (expand-file-name buffer-file-name) file-name)))
+  (let ((directory (locate-dominating-file default-directory file-name)))
     (when directory (concat directory file-name))))
 
 (defun rbenv--call-process (&rest args)
