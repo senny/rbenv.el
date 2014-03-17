@@ -119,7 +119,8 @@
   (message (concat "[rbenv] using " ruby-version)))
 
 (defun rbenv/list ()
-  (split-string (rbenv--call-process "versions" "--bare") "\n"))
+  (append '("system")
+          (split-string (rbenv--call-process "versions" "--bare") "\n")))
 
 (defun rbenv--setup ()
   (when (not rbenv--initialized)
@@ -148,7 +149,9 @@
   (funcall rbenv-interactive-completion-function prompt options))
 
 (defun rbenv--global-ruby-version ()
-  (rbenv--read-version-from-file rbenv-global-version-file))
+  (if (file-exists-p rbenv-global-version-file)
+      (rbenv--read-version-from-file rbenv-global-version-file)
+    "system"))
 
 (defun rbenv--read-version-from-file (path)
   (with-temp-buffer
