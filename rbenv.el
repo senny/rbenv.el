@@ -175,7 +175,7 @@
         (message output)))))
 
 (defun rbenv--replace-trailing-whitespace (text)
-  (replace-regexp-in-string "[[:space:]]\\'" "" text))
+  (replace-regexp-in-string "[[:space:]\n]+\\'" "" text))
 
 (defun rbenv--update-mode-line ()
   (setq rbenv--modestring (funcall rbenv-modeline-function
