@@ -40,8 +40,11 @@
 ;;; Compiler support:
 
 ;; helper function used in variable definitions
-(defcustom rbenv-installation-dir (or (getenv "RBENV_ROOT")
-                                      (concat (getenv "HOME") "/.rbenv/"))
+(defcustom rbenv-installation-dir (or (and (string-equal system-type "darwin")
+                                      (file-directory-p "/usr/local/opt/rbenv")
+                                      "/usr/local/opt/rbenv/")
+                                 (getenv "RBENV_ROOT")
+                                 (concat (getenv "HOME") "/.rbenv/"))
   "The path to the directory where rbenv was installed."
   :group 'rbenv
   :type 'directory)
