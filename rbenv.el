@@ -68,8 +68,10 @@
   :group 'rbenv
   :type 'function)
 
-(defvar rbenv-executable (rbenv--expand-path "bin" "rbenv")
-  "path to the rbenv executable")
+(defvar rbenv-executable
+  (or (executable-find "rbenv")
+      (rbenv--expand-path "bin" "rbenv"))
+  "Path to the rbenv executable.")
   
 (defvar rbenv-ruby-shim (rbenv--expand-path "shims" "ruby")
   "path to the ruby shim executable")
