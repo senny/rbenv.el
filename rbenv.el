@@ -37,7 +37,7 @@
 ;; M-x rbenv-use allows you to switch the current session to the ruby
 ;; implementation of your choice.
 
-;;; Compiler support:
+;;; Code:
 
 ;; helper function used in variable definitions
 (defcustom rbenv-installation-dir (or (getenv "RBENV_ROOT")
