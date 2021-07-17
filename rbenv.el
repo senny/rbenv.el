@@ -99,7 +99,7 @@
 
 ;;;###autoload
 (defun rbenv-use-global ()
-  "activate rbenv global ruby"
+  "Activate rbenv’s global Ruby."
   (interactive)
   (rbenv-use (rbenv--global-ruby-version)))
 
