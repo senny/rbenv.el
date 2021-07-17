@@ -120,6 +120,7 @@
   (message (concat "[rbenv] using " ruby-version)))
 
 (defun rbenv/list ()
+  "List all versions of Ruby locally installed via rbenv."
   (append '("system")
           (split-string (rbenv--call-process "versions" "--bare") "\n")))
 
