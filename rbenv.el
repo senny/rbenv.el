@@ -125,6 +125,7 @@
           (split-string (rbenv--call-process "versions" "--bare") "\n")))
 
 (defun rbenv--setup ()
+  "Perform the one-time rbenv setup."
   (when (not rbenv--initialized)
     (dolist (path-config rbenv-binary-paths)
       (let ((bin-path (cdr path-config)))
