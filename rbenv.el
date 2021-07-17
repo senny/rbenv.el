@@ -114,7 +114,7 @@
 
 ;;;###autoload
 (defun rbenv-use (ruby-version)
-  "choose what ruby you want to activate"
+  "Activate a specified version of Ruby."
   (interactive
    (let ((picked-ruby (rbenv--completing-read "Ruby version: " (rbenv/list))))
      (list picked-ruby)))
