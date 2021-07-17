@@ -38,10 +38,9 @@
 ;; implementation of your choice.
 
 ;;; Code:
-
-;; helper function used in variable definitions
-(defcustom rbenv-installation-dir (or (getenv "RBENV_ROOT")
-                                      (concat (getenv "HOME") "/.rbenv/"))
+(defcustom rbenv-installation-dir
+  (or (getenv "RBENV_ROOT")
+      (expand-file-name ".rbenv" (getenv "HOME")))
   "The path to the directory where rbenv was installed."
   :group 'rbenv
   :type 'directory)
