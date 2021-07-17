@@ -47,9 +47,10 @@
   :type 'directory)
 
 (defun rbenv--expand-path (&rest segments)
+  "Expand SEGMENTS relative to the install dir."
   (let ((path (mapconcat 'identity segments "/"))
         (installation-dir (replace-regexp-in-string "/$" "" rbenv-installation-dir)))
-    (expand-file-name (concat installation-dir "/" path))))
+    (expand-file-name path rbenv-installation-dir)))
 
 (defcustom rbenv-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
