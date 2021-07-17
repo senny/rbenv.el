@@ -105,7 +105,7 @@
 
 ;;;###autoload
 (defun rbenv-use-corresponding ()
-  "search for .ruby-version and activate the corresponding ruby"
+  "Search for .ruby-version and activate the corresponding Ruby."
   (interactive)
   (let ((version-file-path (or (rbenv--locate-file ".ruby-version")
                                (rbenv--locate-file ".rbenv-version"))))
