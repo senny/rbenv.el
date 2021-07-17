@@ -54,12 +54,12 @@
 
 (defcustom rbenv-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
-  "The function which is used by rbenv.el to interactivly complete user input"
+  "Function used to interactively complete user input."
   :group 'rbenv
   :type 'function)
 
 (defcustom rbenv-show-active-ruby-in-modeline t
-  "Toggles wether rbenv-mode shows the active ruby in the modeline."
+  "Whether to show the active Ruby environment in the modeline."
   :group 'rbenv
   :type 'boolean)
 
@@ -73,28 +73,34 @@
       (rbenv--expand-path "bin" "rbenv"))
   "Path to the rbenv executable.")
   
-(defvar rbenv-ruby-shim (rbenv--expand-path "shims" "ruby")
-  "path to the ruby shim executable")
+(defvar rbenv-ruby-shim
+  (rbenv--expand-path "shims" "ruby")
+  "Path to the Ruby executable shim.")
 
-(defvar rbenv-global-version-file (rbenv--expand-path "version")
-  "path to the global version configuration file of rbenv")
+(defvar rbenv-global-version-file
+  (rbenv--expand-path "version")
+  "Path to the global version configuration file of rbenv.")
 
-(defvar rbenv-version-environment-variable "RBENV_VERSION"
-  "name of the environment variable to configure the rbenv version")
+(defvar rbenv-version-environment-variable
+  "RBENV_VERSION"
+  "Name of the environment variable to configure the rbenv version.")
 
-(defvar rbenv-binary-paths (list (cons 'shims-path (rbenv--expand-path "shims"))
-                                 (cons 'bin-path (rbenv--expand-path "bin")))
-  "these are added to PATH and exec-path when rbenv is setup")
+(defvar rbenv-binary-paths
+  (list (cons 'shims-path (rbenv--expand-path "shims"))
+        (cons 'bin-path (rbenv--expand-path "bin")))
+  "Paths added to PATH and variable ‘exec-path’ when rbenv is setup.")
 
 (defface rbenv-active-ruby-face
   '((t (:weight bold :foreground "Red")))
   "The face used to highlight the current ruby on the modeline.")
 
-(defvar rbenv--initialized nil
-  "indicates if the current Emacs session has been configured to use rbenv")
+(defvar rbenv--initialized
+  nil
+  "Whether the current Emacs session has been configured to use rbenv.")
 
 (defvar rbenv--modestring nil
   "text rbenv-mode will display in the modeline.")
+
 (put 'rbenv--modestring 'risky-local-variable t)
 
 ;;;###autoload
