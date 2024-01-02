@@ -37,28 +37,28 @@
 ;; M-x rbenv-use allows you to switch the current session to the ruby
 ;; implementation of your choice.
 
-;;; Compiler support:
-
-;; helper function used in variable definitions
-(defcustom rbenv-installation-dir (or (getenv "RBENV_ROOT")
-                                      (concat (getenv "HOME") "/.rbenv/"))
+;;; Code:
+(defcustom rbenv-installation-dir
+  (or (getenv "RBENV_ROOT")
+      (expand-file-name ".rbenv" (getenv "HOME")))
   "The path to the directory where rbenv was installed."
   :group 'rbenv
   :type 'directory)
 
 (defun rbenv--expand-path (&rest segments)
-  (let ((path (mapconcat 'identity segments "/"))
-        (installation-dir (replace-regexp-in-string "/$" "" rbenv-installation-dir)))
-    (expand-file-name (concat installation-dir "/" path))))
+  "Expand SEGMENTS relative to `rbenv-installation-dir'."
+  (reduce (lambda (dir child) (expand-file-name child dir))
+          segments
+          :initial-value rbenv-installation-dir))
 
 (defcustom rbenv-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
-  "The function which is used by rbenv.el to interactivly complete user input"
+  "Function used to interactively complete user input."
   :group 'rbenv
   :type 'function)
 
 (defcustom rbenv-show-active-ruby-in-modeline t
-  "Toggles wether rbenv-mode shows the active ruby in the modeline."
+  "Whether to show the active Ruby environment in the modeline."
   :group 'rbenv
   :type 'boolean)
 
@@ -67,42 +67,50 @@
   :group 'rbenv
   :type 'function)
 
-(defvar rbenv-executable (rbenv--expand-path "bin" "rbenv")
-  "path to the rbenv executable")
+(defvar rbenv-executable
+  (or (executable-find "rbenv")
+      (rbenv--expand-path "bin" "rbenv"))
+  "Path to the rbenv executable.")
   
-(defvar rbenv-ruby-shim (rbenv--expand-path "shims" "ruby")
-  "path to the ruby shim executable")
+(defvar rbenv-ruby-shim
+  (rbenv--expand-path "shims" "ruby")
+  "Path to the Ruby executable shim.")
 
-(defvar rbenv-global-version-file (rbenv--expand-path "version")
-  "path to the global version configuration file of rbenv")
+(defvar rbenv-global-version-file
+  (rbenv--expand-path "version")
+  "Path to the global version configuration file of rbenv.")
 
-(defvar rbenv-version-environment-variable "RBENV_VERSION"
-  "name of the environment variable to configure the rbenv version")
+(defvar rbenv-version-environment-variable
+  "RBENV_VERSION"
+  "Name of the environment variable to configure the rbenv version.")
 
-(defvar rbenv-binary-paths (list (cons 'shims-path (rbenv--expand-path "shims"))
-                                 (cons 'bin-path (rbenv--expand-path "bin")))
-  "these are added to PATH and exec-path when rbenv is setup")
+(defvar rbenv-binary-paths
+  (list (cons 'shims-path (rbenv--expand-path "shims"))
+        (cons 'bin-path (rbenv--expand-path "bin")))
+  "Paths added to PATH and variable ‘exec-path’ when rbenv is setup.")
 
 (defface rbenv-active-ruby-face
   '((t (:weight bold :foreground "Red")))
   "The face used to highlight the current ruby on the modeline.")
 
-(defvar rbenv--initialized nil
-  "indicates if the current Emacs session has been configured to use rbenv")
+(defvar rbenv--initialized
+  nil
+  "Whether the current Emacs session has been configured to use rbenv.")
 
 (defvar rbenv--modestring nil
   "text rbenv-mode will display in the modeline.")
+
 (put 'rbenv--modestring 'risky-local-variable t)
 
 ;;;###autoload
 (defun rbenv-use-global ()
-  "activate rbenv global ruby"
+  "Activate rbenv’s global Ruby."
   (interactive)
   (rbenv-use (rbenv--global-ruby-version)))
 
 ;;;###autoload
 (defun rbenv-use-corresponding ()
-  "search for .ruby-version and activate the corresponding ruby"
+  "Search for .ruby-version and activate the corresponding Ruby."
   (interactive)
   (let ((version-file-path (or (rbenv--locate-file ".ruby-version")
                                (rbenv--locate-file ".rbenv-version"))))
@@ -111,7 +119,7 @@
 
 ;;;###autoload
 (defun rbenv-use (ruby-version)
-  "choose what ruby you want to activate"
+  "Activate a specified version of Ruby."
   (interactive
    (let ((picked-ruby (rbenv--completing-read "Ruby version: " (rbenv/list))))
      (list picked-ruby)))
@@ -119,10 +127,12 @@
   (message (concat "[rbenv] using " ruby-version)))
 
 (defun rbenv/list ()
+  "List all versions of Ruby locally installed via rbenv."
   (append '("system")
           (split-string (rbenv--call-process "versions" "--bare") "\n")))
 
 (defun rbenv--setup ()
+  "Perform the one-time rbenv setup."
   (when (not rbenv--initialized)
     (dolist (path-config rbenv-binary-paths)
       (let ((bin-path (cdr path-config)))
