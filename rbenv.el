@@ -47,7 +47,7 @@
 
 (defun rbenv--expand-path (&rest segments)
   "Expand SEGMENTS relative to `rbenv-installation-dir'."
-  (reduce (lambda (dir child) (expand-file-name child dir))
+  (cl-reduce (lambda (dir child) (expand-file-name child dir))
           segments
           :initial-value rbenv-installation-dir))
 
