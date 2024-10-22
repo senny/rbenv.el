@@ -1,62 +1,99 @@
-rbenv.el
-========
+# rbenv.el
 
-use rbenv to manage your Ruby versions within Emacs
+Use [rbenv](https://github.com/rbenv/rbenv) to manage your Ruby versions within GNU Emacs.
 
-Installation
-------------
+## Installation
 
-```lisp
-(add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
-(require 'rbenv)
-(global-rbenv-mode)
+* Native:
+
+    1. Clone this repo.
+    1. Add into `init.el`:
+
+        ```emacs-lisp
+        (add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
+        (require 'rbenv)
+        (global-rbenv-mode)
+        ```
+
+* `package.el`:
+
+    ```emacs-lisp
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+    (package-initialize)
+
+    (unless package-archive-contents
+      (package-refresh-contents))
+
+    (unless (package-installed-p 'rbenv)
+      (package-install 'rbenv))
+
+    (require 'rbenv)
+    (global-rbenv-mode)
+    ```
+
+* `use-package`:
+
+    ```emacs-lisp
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+    (package-initialize)
+
+    (unless package-archive-contents
+      (package-refresh-contents))
+
+    (use-package rbenv
+      :ensure t
+      :config (global-rbenv-mode))
+    ```
+
+## Usage
+
+* `global-rbenv-mode` — activate / deactivate `rbenv.el` (The current Ruby version is shown in the modeline).
+* `rbenv-use-global` — activate your global Ruby interpreter.
+* `rbenv-use` — allows you to choose what Ruby version you want to use.
+* `rbenv-use-corresponding` — searches for `.ruby-version` and activates the corresponding Ruby interpreter.
+
+## Configuration
+
+### rbenv installation directory
+
+By default `rbenv.el` assumes that you installed `rbenv` into `~/.rbenv`. If you use a different installation location you can
+customize `rbenv-installation-dir` variable to search in the right place:
+
+```emacs-lisp
+(customize-set-variable 'rbenv-installation-dir "/usr/local/rbenv")
 ```
 
-Usage
------
+**IMPORTANT:** Currently you need to set this variable before you load `rbenv.el`:
 
-* `global-rbenv-mode` activate / deactivate rbenv.el (The current Ruby version is shown in the modeline)
-* `rbenv-use-global` will activate your global ruby
-* `rbenv-use` allows you to choose what ruby version you want to use
-* `rbenv-use-corresponding` searches for .ruby-version and activates
-  the corresponding ruby
-
-Configuration
--------------
-
-**rbenv installation directory**
-By default rbenv.el assumes that you installed rbenv into
-`~/.rbenv`. If you use a different installation location you can
-customize rbenv.el to search in the right place:
-
-```lisp
-(setq rbenv-installation-dir "/usr/local/rbenv")
+```emacs-lisp
+(use-package rbenv
+  :ensure t
+  :init
+  (customize-set-variable 'rbenv-installation-dir "/usr/local/rbenv")
+  :config (global-rbenv-mode))
 ```
 
-*IMPORTANT:*: Currently you need to set this variable before you load rbenv.el
+### The modeline
 
-**the modeline**
-rbenv.el will show you the active ruby in the modeline. If you don't
-like this feature you can disable it:
+`rbenv.el` will show you the active Ruby in the modeline. If you don't like this feature you can disable it:
 
-```lisp
-(setq rbenv-show-active-ruby-in-modeline nil)
+```emacs-lisp
+(customize-set-variable 'rbenv-show-active-ruby-in-modeline nil)
 ```
 
-The default modeline representation is the ruby version (colored red) in square
-brackets. You can change the format by customizing the variable:
+The default modeline representation is the Ruby version (colored red) in square brackets. You can change the format by customizing the variable `rbenv-modeline-function`:
 
-```lisp
+```emacs-lisp
 ;; this will remove the colors
-(setq rbenv-modeline-function 'rbenv--modeline-plain)
+(customize-set-variable 'rbenv-modeline-function 'rbenv--modeline-plain)
 ```
 
-You can also define your own function to format the ruby version as you like.
+You can also define your own function to format the Ruby version as you like.
 
-Press
------
+## Press
 
-If you want to read more about rbenv.el check out the following links:
+If you want to read more about `rbenv.el` check out the following links:
 
 * [Use the right Ruby with emacs and rbenv](http://blog.senny.ch/blog/2013/02/11/use-the-right-ruby-with-emacs-and-rbenv/) by Yves Senn
 

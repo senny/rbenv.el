@@ -1,7 +1,20 @@
+# Contributing
+
 Contributions are very welcome!
 
 1. Fork rbenv.el
-2. Create a topic branch - `git checkout -b my_branch`
-4. Push to your branch - `git push origin my_branch`
-5. Send me a pull-request for your topic branch
-6. That's it!
+1. Clone fork repository.
+1. Create a topic branch in the fork repository:
+
+    ```bash
+    git checkout -b <my-branch>
+    ```
+
+1. Push to your fork repository:
+
+    ```bash
+    git push origin --set-upstream <my-branch>
+    ```
+
+1. Send me a pull-request for your topic branch.
+1. That's it!
